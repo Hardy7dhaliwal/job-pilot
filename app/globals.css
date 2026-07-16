@@ -2,26 +2,161 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* ----------------------------------------------------------------------------
+   Design tokens — JobPilot
+   Indigo/violet brand. Dark-first, slightly tinted (not flat) surfaces.
+   Three card tiers give the layout real hierarchy:
+     --card        default elevated surface
+     --card-muted  lower-tier surface (columns, nested panels)
+     --card-flat   flush surface (stat tiles) — borderless, no shadow
+---------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    /* Surfaces — light */
+    --background: oklch(0.99 0.003 285);
+    --foreground: oklch(0.16 0.01 285);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.16 0.01 285);
+    --card-muted: oklch(0.975 0.004 285);
+    --card-muted-foreground: oklch(0.16 0.01 285);
+    --card-flat: oklch(0.985 0.002 285);
+
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.16 0.01 285);
+
+    /* Brand — indigo */
+    --primary: oklch(0.52 0.21 277);          /* indigo-500-ish */
+    --primary-foreground: oklch(0.99 0.01 277);
+
+    --secondary: oklch(0.965 0.006 285);
+    --secondary-foreground: oklch(0.22 0.01 285);
+
+    --muted: oklch(0.965 0.004 285);
+    --muted-foreground: oklch(0.52 0.02 285);
+
+    --accent: oklch(0.96 0.018 277);
+    --accent-foreground: oklch(0.4 0.15 277);
+
+    --destructive: oklch(0.58 0.24 27);
+    --destructive-foreground: oklch(0.99 0.01 27);
+
+    --success: oklch(0.6 0.15 160);
+    --warning: oklch(0.7 0.16 75);
+
+    --border: oklch(0.92 0.006 285);
+    --input: oklch(0.92 0.006 285);
+    --ring: oklch(0.52 0.21 277);
+
+    --chart-1: oklch(0.52 0.21 277);
+    --chart-2: oklch(0.6 0.15 160);
+    --chart-3: oklch(0.7 0.16 75);
+    --chart-4: oklch(0.65 0.2 320);
+    --chart-5: oklch(0.58 0.21 250);
+
+    --radius: 0.625rem;
+
+    /* Sidebar */
+    --sidebar: oklch(0.985 0.004 278);
+    --sidebar-foreground: oklch(0.18 0.01 285);
+    --sidebar-primary: oklch(0.52 0.21 277);
+    --sidebar-primary-foreground: oklch(0.99 0.01 277);
+    --sidebar-accent: oklch(0.96 0.018 277);
+    --sidebar-accent-foreground: oklch(0.4 0.15 277);
+    --sidebar-border: oklch(0.92 0.006 285);
+    --sidebar-ring: oklch(0.52 0.21 277);
+  }
+
+  .dark {
+    /* Surfaces — dark, tinted toward indigo so it's never flat #000 */
+    --background: oklch(0.16 0.012 280);
+    --foreground: oklch(0.97 0.004 285);
+
+    --card: oklch(0.205 0.014 280);
+    --card-foreground: oklch(0.97 0.004 285);
+    --card-muted: oklch(0.235 0.014 280);
+    --card-muted-foreground: oklch(0.97 0.004 285);
+    --card-flat: oklch(0.19 0.012 280);
+
+    --popover: oklch(0.215 0.015 280);
+    --popover-foreground: oklch(0.97 0.004 285);
+
+    /* Brand — indigo, brighter on dark so it pops */
+    --primary: oklch(0.62 0.2 277);
+    --primary-foreground: oklch(0.15 0.02 277);
+
+    --secondary: oklch(0.27 0.012 280);
+    --secondary-foreground: oklch(0.97 0.004 285);
+
+    --muted: oklch(0.26 0.012 280);
+    --muted-foreground: oklch(0.69 0.02 285);
+
+    --accent: oklch(0.3 0.05 278);
+    --accent-foreground: oklch(0.92 0.04 277);
+
+    --destructive: oklch(0.66 0.2 25);
+    --destructive-foreground: oklch(0.98 0.01 25);
+
+    --success: oklch(0.68 0.15 160);
+    --warning: oklch(0.74 0.16 75);
+
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 14%);
+    --ring: oklch(0.62 0.2 277);
+
+    --chart-1: oklch(0.62 0.2 277);
+    --chart-2: oklch(0.68 0.15 160);
+    --chart-3: oklch(0.74 0.16 75);
+    --chart-4: oklch(0.7 0.2 320);
+    --chart-5: oklch(0.65 0.21 250);
+
+    --sidebar: oklch(0.185 0.013 280);
+    --sidebar-foreground: oklch(0.96 0.004 285);
+    --sidebar-primary: oklch(0.62 0.2 277);
+    --sidebar-primary-foreground: oklch(0.15 0.02 277);
+    --sidebar-accent: oklch(0.27 0.04 278);
+    --sidebar-accent-foreground: oklch(0.92 0.04 277);
+    --sidebar-border: oklch(1 0 0 / 8%);
+    --sidebar-ring: oklch(0.62 0.2 277);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: "opsz" 32;
+  }
+
+  /* Subtle scrollbars so long lists/jobs don't feel like a butane torch */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+    background-clip: content-box;
+  }
+
+  /* Word-wrap long URLs / job descriptions without breaking layout */
+  .min-w-0 { min-width: 0; }
 }

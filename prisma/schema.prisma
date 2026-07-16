@@ -1,0 +1,163 @@
+// JobPilot database schema.
+//
+// SQLite via Prisma for easy local dev. To move to Postgres later, change the
+// datasource provider and connection string — the models are written to be
+// portable (no SQLite-specific types).
+//
+// NOTE: Prisma enums are not supported on SQLite, so fields like Job.source,
+// Application.stage, and Application.reviewStatus are strings. The allowed
+// values are defined and validated in lib/constants.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Resumes
+// ---------------------------------------------------------------------------
+
+// A resume document. Exactly one resume should have isMaster = true — the
+// "source of truth" that job matching and tailoring run against.
+model Resume {
+  id        String   @id @default(cuid())
+  title     String
+  content   String // markdown or plain text body
+  format    String   @default("markdown") // "markdown" | "text"
+  isMaster  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  versions ResumeVersion[]
+}
+
+// A tailored variant of a resume, usually generated for a specific job
+// (Phase 3). changesMade holds the audit list the tailor must produce so the
+// user can verify nothing was fabricated.
+model ResumeVersion {
+  id          String   @id @default(cuid())
+  resumeId    String
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobId       String?
+  job         Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  label       String? // e.g. "Tailored for Acme — Senior Backend Engineer"
+  content     String
+  changesMade String   @default("[]") // JSON array of human-readable change descriptions
+  createdAt   DateTime @default(now())
+
+  applications Application[]
+
+  @@index([resumeId])
+  @@index([jobId])
+}
+
+// ---------------------------------------------------------------------------
+// Job discovery (Phase 4)
+// ---------------------------------------------------------------------------
+
+// A saved search used by the background fetcher.
+model SearchProfile {
+  id            String    @id @default(cuid())
+  name          String
+  keywords      String // comma-separated keywords
+  location      String?
+  remoteOnly    Boolean   @default(false)
+  seniority     String? // "junior" | "mid" | "senior" | "staff" | "lead" | null = any
+  sources       String    @default("[]") // JSON array of enabled sources, see JOB_SOURCES
+  isActive      Boolean   @default(true)
+  lastFetchedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Jobs, parsing, and scoring (Phases 2 & 4)
+// ---------------------------------------------------------------------------
+
+model Job {
+  id           String    @id @default(cuid())
+  source       String    @default("manual") // see JOB_SOURCES in lib/constants.ts
+  externalId   String? // id from the source API, when available
+  dedupeKey    String    @unique // normalized hash of company+title+location for cross-source dedup
+  title        String
+  company      String
+  location     String?
+  remote       Boolean   @default(false)
+  url          String? // application URL
+  description  String // full JD text
+  postedAt     DateTime?
+  discoveredAt DateTime  @default(now())
+
+  // LLM-parsed JD: { mustHaveSkills, niceToHaveSkills, yearsExperience,
+  // seniority, atsKeywords } — stored as JSON, typed in lib/types.ts
+  parsedJson String?
+  parsedAt   DateTime?
+
+  // LLM match score against the master resume (0–100), with detail JSON:
+  // { matchedSkills, missingMustHaves, gaps, rationale }
+  matchScore Int?
+  matchJson  String?
+  scoredAt   DateTime?
+
+  application    Application?
+  resumeVersions ResumeVersion[]
+  coverLetters   CoverLetter[]
+
+  @@index([matchScore])
+  @@index([discoveredAt])
+  @@index([source])
+  @@index([postedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Cover letters (Phase 3)
+// ---------------------------------------------------------------------------
+
+model CoverLetter {
+  id        String   @id @default(cuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applications Application[]
+
+  @@index([jobId])
+}
+
+// ---------------------------------------------------------------------------
+// Application tracker + review queue (Phase 5)
+// ---------------------------------------------------------------------------
+
+model Application {
+  id    String @id @default(cuid())
+  jobId String @unique
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  stage     String @default("DISCOVERED") // see APPLICATION_STAGES in lib/constants.ts
+  sortOrder Int    @default(0) // position within its kanban column
+
+  notes      String    @default("")
+  appliedAt  DateTime?
+  followUpAt DateTime?
+
+  // Human-in-the-loop review queue. The agent never auto-submits: items become
+  // PENDING when materials are pre-generated, APPROVED when the user signs off.
+  reviewStatus String @default("NONE") // "NONE" | "PENDING" | "APPROVED"
+
+  resumeVersionId String?
+  resumeVersion   ResumeVersion? @relation(fields: [resumeVersionId], references: [id], onDelete: SetNull)
+  coverLetterId   String?
+  coverLetter     CoverLetter?   @relation(fields: [coverLetterId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stage])
+  @@index([reviewStatus])
+}
