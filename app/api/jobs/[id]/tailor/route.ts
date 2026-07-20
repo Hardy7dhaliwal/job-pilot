@@ -1,15 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { AIError, callClaudeJSON } from "@/lib/ai";
+import { AIError, callClaudeText } from "@/lib/ai";
 import { ensureParsed } from "@/lib/analyze";
 import { TAILOR_SYSTEM, tailorUser } from "@/lib/prompts";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-interface TailorOutput {
-  content: string;
-  changesMade: string[];
+/**
+ * Parse the XML-style tags the tailor model returns.
+ *
+ * Expected format:
+ *   <tailored_resume>
+ *   ...markdown...
+ *   </tailored_resume>
+ *
+ *   <changes_made>
+ *   ["change 1", "change 2"]
+ *   </changes_made>
+ *
+ * Returns the trimmed resume content and a list of changes.
+ */
+function parseTailorOutput(text: string): { content: string; changesMade: string[] } {
+  const resumeMatch = text.match(/<tailored_resume>\s*([\s\S]*?)\s*<\/tailored_resume>/);
+  const changesMatch = text.match(/<changes_made>\s*([\s\S]*?)\s*<\/changes_made>/);
+
+  // Fallback: some providers/agents may return plain markdown without the
+  // requested XML tags. Treat the whole output as the resume in that case.
+  const content = resumeMatch?.[1]?.trim() ?? text.trim();
+  let changesMade: string[] = [];
+
+  if (changesMatch?.[1]) {
+    const changesText = changesMatch[1].trim();
+    try {
+      const parsed = JSON.parse(changesText);
+      if (Array.isArray(parsed)) {
+        changesMade = parsed.filter((item) => typeof item === "string");
+      }
+    } catch {
+      // Fallback: treat as a bulleted/plaintext list.
+      changesMade = changesText
+        .split("\n")
+        .map((line) => line.replace(/^[-*•]\s*/, "").trim())
+        .filter(Boolean);
+    }
+  }
+
+  return { content, changesMade };
 }
 
 /**
@@ -43,7 +80,7 @@ export async function POST(
   try {
     const parsed = await ensureParsed(job);
 
-    const result = await callClaudeJSON<TailorOutput>({
+    const raw = await callClaudeText({
       system: TAILOR_SYSTEM,
       user: tailorUser(
         master.content,
@@ -54,7 +91,9 @@ export async function POST(
       maxTokens: 8192, // full resume + audit list
     });
 
-    if (!result.content?.trim()) {
+    const { content, changesMade } = parseTailorOutput(raw);
+
+    if (!content) {
       return NextResponse.json(
         { error: "The AI returned an empty resume. Please try again." },
         { status: 502 }
@@ -66,10 +105,8 @@ export async function POST(
         resumeId: master.id,
         jobId: job.id,
         label: `Tailored for ${job.company} — ${job.title}`,
-        content: result.content.trim(),
-        changesMade: JSON.stringify(
-          Array.isArray(result.changesMade) ? result.changesMade : []
-        ),
+        content,
+        changesMade: JSON.stringify(changesMade),
       },
     });
 
