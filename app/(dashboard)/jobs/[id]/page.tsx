@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { JobActions } from "@/components/jobs/job-actions";
 import { JobMaterials } from "@/components/jobs/job-materials";
 import { Badge } from "@/components/ui/badge";
@@ -158,7 +158,7 @@ export default async function JobDetailPage({
                 </div>
                 {job.scoredAt && (
                   <span className="mt-1 whitespace-nowrap text-[10px] text-muted-foreground">
-                    Scored {new Date(job.scoredAt).toLocaleDateString()}
+                    Scored {formatDate(job.scoredAt)}
                   </span>
                 )}
               </div>
@@ -263,6 +263,7 @@ export default async function JobDetailPage({
           latestVersion
             ? {
                 id: latestVersion.id,
+                resumeId: latestVersion.resumeId,
                 content: latestVersion.content,
                 label: latestVersion.label,
                 changesMade: latestVersion.changesMade,

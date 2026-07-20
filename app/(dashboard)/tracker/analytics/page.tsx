@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
 import { BarChart3 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +38,7 @@ export default async function AnalyticsPage() {
       (a) => a.createdAt >= weekStart && a.createdAt < weekEnd
     ).length;
     weeks.push({
-      label: weekStart.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+      label: formatDate(weekStart),
       count,
     });
   }

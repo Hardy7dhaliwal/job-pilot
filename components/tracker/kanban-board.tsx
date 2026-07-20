@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { APPLICATION_STAGES } from "@/lib/constants";
 import { ScoreBadge } from "@/components/jobs/score-badge";
 import { Card } from "@/components/ui/card";
@@ -217,7 +217,7 @@ export function KanbanBoard({ applications }: { applications: AppCard[] }) {
                       {app.followUpAt && (
                         <p className="mt-1.5 flex items-center gap-1 text-[10px] text-muted-foreground">
                           <CalendarClock className="h-3 w-3 shrink-0" />
-                          Follow-up {new Date(app.followUpAt).toLocaleDateString()}
+                          Follow-up {formatDate(app.followUpAt)}
                         </p>
                       )}
                       {app.notes && (

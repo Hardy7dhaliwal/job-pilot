@@ -22,7 +22,9 @@ export function FetchButton() {
       if (!res.ok) throw new Error(data.error ?? "Fetch failed");
       toast.success(
         `Found ${data.fetched} listings, ${data.newJobs} new jobs added, ${data.scored} scored.` +
-          (data.errors > 0 ? ` (${data.errors} scoring errors — jobs still saved)` : "")
+          (data.errors > 0
+            ? ` (${data.errors} scoring errors — jobs still saved)`
+            : ""),
       );
       router.refresh();
     } catch (err) {
@@ -39,7 +41,7 @@ export function FetchButton() {
       ) : (
         <RefreshCw className="mr-2 h-4 w-4" />
       )}
-      {running ? "Fetching & scoring…" : "Fetch now"}
+      {running ? "Fetching" : "Fetch now"}
     </Button>
   );
 }

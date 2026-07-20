@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -17,10 +18,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, FileText, Mail, Save, Sparkles } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
+import { Loader2, FileText, History, Mail, Save, Sparkles } from "lucide-react";
 
 interface ResumeVersion {
   id: string;
+  resumeId: string;
   content: string;
   label: string | null;
   changesMade: string;
@@ -189,7 +192,14 @@ export function JobMaterials({
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-muted-foreground">
                     <span className="font-medium text-foreground">{latestVersion.label}</span>{" "}
-                    · created {new Date(latestVersion.createdAt).toLocaleString()}
+                    · created {formatDateTime(latestVersion.createdAt)}
+                    <Link
+                      href={`/resumes/${latestVersion.resumeId}`}
+                      className="ml-2 inline-flex items-center gap-1 text-xs text-primary/70 hover:text-primary"
+                    >
+                      <History className="h-3 w-3" />
+                      View all versions
+                    </Link>
                   </p>
                   <ExportButtons
                     markdown={latestVersion.content}
@@ -297,7 +307,7 @@ export function JobMaterials({
               <>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-muted-foreground">
-                    Last generated {new Date(coverLetter.updatedAt).toLocaleString()}
+                    Last generated {formatDateTime(coverLetter.updatedAt)}
                     {letterDirty && (
                       <span className="ml-2 text-xs text-yellow-500">· unsaved edits</span>
                     )}

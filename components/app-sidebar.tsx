@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ProviderToggle } from "@/components/provider-toggle";
 import {
   BarChart3,
   Briefcase,
@@ -122,6 +123,7 @@ export function AppSidebar() {
       <NavList pathname={pathname} />
 
       <div className="border-t border-sidebar-border p-2 space-y-1">
+        <ProviderToggle />
         {mounted && (
           <Button
             variant="ghost"

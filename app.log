@@ -1,0 +1,39 @@
+
+> jobpilot@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 920ms
+ ✓ Compiled /middleware in 61ms (73 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 676ms (556 modules)
+ HEAD /login 200 in 764ms
+ ✓ Compiled in 97ms (272 modules)
+ GET /login 200 in 33ms
+ ✓ Compiled /favicon.ico in 190ms (316 modules)
+ GET /favicon.ico 200 in 235ms
+ ✓ Compiled in 136ms (272 modules)
+ ✓ Compiled in 70ms (272 modules)
+ ✓ Compiled in 95ms (615 modules)
+ ✓ Compiled in 81ms (272 modules)
+ ✓ Compiled in 80ms (272 modules)
+ ✓ Compiled in 98ms (272 modules)
+ ✓ Compiled /api/auth/login in 135ms (313 modules)
+ POST /api/auth/login 200 in 174ms
+ ✓ Compiled in 115ms (272 modules)
+ ✓ Compiled in 74ms (272 modules)
+ POST /api/auth/login 200 in 8ms
+ ✓ Compiled /api/settings in 166ms (317 modules)
+ GET /api/settings 200 in 523ms
+ ✓ Compiled in 104ms (272 modules)
+ PATCH /api/settings 200 in 5ms
+ GET /api/settings 200 in 10ms
+ ✓ Compiled /api/jobs/[id]/tailor in 219ms (433 modules)
+ POST /api/jobs/cmrn8ijyo00029kkgzp8dsq77/tailor 502 in 463ms
+   Reload env: .env
+ ✓ Compiled in 140ms (615 modules)
+ ✓ Compiled /_error in 490ms (768 modules)

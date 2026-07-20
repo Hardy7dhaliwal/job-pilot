@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
 import { Briefcase, MapPin, Calendar } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -116,7 +117,7 @@ export default async function JobsPage({
                       )}
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        added {job.discoveredAt.toLocaleDateString()}
+                        added {formatDate(job.discoveredAt)}
                       </span>
                     </CardDescription>
                   </div>

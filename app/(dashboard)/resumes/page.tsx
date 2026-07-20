@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
 import { FileText, Star } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -72,7 +73,7 @@ export default async function ResumesPage() {
                   <CardDescription className="mt-1">
                     {resume._count.versions} tailored version
                     {resume._count.versions === 1 ? "" : "s"} · updated{" "}
-                    {resume.updatedAt.toLocaleDateString()}
+                    {formatDate(resume.updatedAt)}
                   </CardDescription>
                 </Link>
                 <ResumeActions

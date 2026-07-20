@@ -54,7 +54,7 @@ Open [http://localhost:3000](http://localhost:3000) and log in with your `APP_PA
 - **PDF parsing** via pdf-parse v2 (text extraction, not OCR — scanned-image PDFs won't work)
 - **Master resume** concept — one resume is the "source of truth" for job matching
 - **Edit** title and content inline
-- **Version history** — tailored variants (created in Phase 3) appear here
+- **Version history** — tailored variants (created in Phase 3) appear here with full preview, export, print, and delete actions
 - **Delete** with master-protection (can't delete master while others exist)
 
 ### Dashboard
@@ -248,6 +248,31 @@ AI_BASE_URL="http://localhost:1234/v1"   # your server's URL
 AI_API_KEY="your-key"                     # or omit for local servers
 AI_MODEL="your-model-name"
 ```
+
+### Option 6: External Agent Service (agy / Antigravity CLI)
+
+JobPilot can delegate AI calls to a separate local agent service that spawns the `agy` CLI. This is useful if you have an Antigravity account and want to route all AI work through one reusable backend.
+
+1. Start the agent service (see the separate `agent/` project).
+2. Set the env vars:
+
+```env
+AI_PROVIDER="agent"
+AGENT_BASE_URL="http://localhost:4000"
+AGENT_API_KEY="change-me-in-production"
+```
+
+The active provider and model can also be changed in-app from the sidebar toggle.
+
+## In-App AI Settings
+
+A settings panel in the app sidebar lets you switch the active AI provider and model without editing `.env`. Changes are persisted in the `Setting` table and take effect immediately for the next AI call.
+
+Supported providers in the UI:
+- Anthropic
+- OpenAI-compatible
+- Ollama
+- Agent (external agent service)
 
 ## Environment Variables
 

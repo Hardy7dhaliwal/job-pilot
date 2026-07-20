@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     // If AI is available, use it to clean up and structure the job posting.
-    if (isAIAvailable()) {
+    if (await isAIAvailable()) {
       try {
         const system = `You are a helpful job parser. Analyze the scraped text from a job posting web page and extract:
 1. Job Title (normalize slightly if needed, e.g., "Senior Software Engineer (Remote)" -> "Senior Software Engineer")

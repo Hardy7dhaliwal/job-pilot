@@ -161,3 +161,15 @@ model Application {
   @@index([stage])
   @@index([reviewStatus])
 }
+
+// ---------------------------------------------------------------------------
+// App settings (single-user)
+// ---------------------------------------------------------------------------
+
+model Setting {
+  id         String  @id @default("default")
+  aiProvider String? // "anthropic" | "openai" | "ollama" | "agent"
+  aiModel    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

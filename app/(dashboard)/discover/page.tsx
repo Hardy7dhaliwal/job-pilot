@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatDateTime } from "@/lib/utils";
 import { Search, Radio } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -90,7 +91,7 @@ export default async function DiscoverPage() {
                       {profile.location && <span>{profile.location}</span>}
                       <span>{sources.length} source{sources.length === 1 ? "" : "s"}</span>
                       {profile.lastFetchedAt && (
-                        <span>last fetched {profile.lastFetchedAt.toLocaleString()}</span>
+                        <span>last fetched {formatDateTime(profile.lastFetchedAt)}</span>
                       )}
                     </CardDescription>
                   </div>
