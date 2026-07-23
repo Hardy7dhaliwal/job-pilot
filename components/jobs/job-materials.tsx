@@ -205,6 +205,7 @@ export function JobMaterials({
                     markdown={latestVersion.content}
                     filename={`resume-${jobId}`}
                     printUrl={`/print/resume-version/${latestVersion.id}`}
+                    pdfUrl={`/api/resume-versions/${latestVersion.id}/pdf`}
                   />
                 </div>
                 <DiffView original={masterContent} tailored={latestVersion.content} />
@@ -316,6 +317,7 @@ export function JobMaterials({
                     markdown={letterContent}
                     filename={`cover-letter-${jobId}`}
                     printUrl={`/print/cover-letter/${coverLetter.id}`}
+                    pdfUrl={`/api/cover-letters/${coverLetter.id}/pdf`}
                   />
                 </div>
                 <Textarea

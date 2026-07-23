@@ -30,6 +30,7 @@ import {
   MoreVertical,
   FileText,
   ExternalLink,
+  FileDown,
 } from "lucide-react";
 
 interface VersionActionsProps {
@@ -40,6 +41,8 @@ interface VersionActionsProps {
   fileName: string;
   /** URL for the print view (/print/resume-version/:id). */
   printUrl: string;
+  /** URL for the server-generated PDF download (/api/resume-versions/:id/pdf). */
+  pdfUrl?: string;
   /** Optional link to the job this was tailored for. */
   jobUrl?: string;
 }
@@ -57,6 +60,7 @@ export function VersionActions({
   versionLabel,
   fileName,
   printUrl,
+  pdfUrl,
   jobUrl,
 }: VersionActionsProps) {
   const router = useRouter();
@@ -116,8 +120,14 @@ export function VersionActions({
             onClick={() => window.open(printUrl, "_blank", "noopener")}
           >
             <Printer className="mr-2 h-4 w-4" />
-            Print / PDF
+            Print view
           </DropdownMenuItem>
+          {pdfUrl && (
+            <DropdownMenuItem onClick={() => window.open(pdfUrl, "_blank", "noopener")}>
+              <FileDown className="mr-2 h-4 w-4" />
+              Download PDF
+            </DropdownMenuItem>
+          )}
           {jobUrl && (
             <>
               <DropdownMenuSeparator />
@@ -160,6 +170,7 @@ export function VersionActions({
               markdown={versionContent}
               filename={fileName}
               printUrl={printUrl}
+              pdfUrl={pdfUrl}
             />
             <Button variant="outline" onClick={() => setViewOpen(false)}>
               Close

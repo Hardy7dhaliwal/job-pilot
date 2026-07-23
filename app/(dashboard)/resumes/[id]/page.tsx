@@ -182,6 +182,7 @@ export default async function ResumeDetailPage({
                     versionLabel={getVersionLabel(version)}
                     fileName={getFileName(version)}
                     printUrl={`/print/resume-version/${version.id}`}
+                    pdfUrl={`/api/resume-versions/${version.id}/pdf`}
                     jobUrl={version.job ? `/jobs/${version.job.id}` : undefined}
                   />
                 </div>
